@@ -43,14 +43,14 @@ public class Database {
 		ArrayList<String[]> ret = new ArrayList<String[]>();
 		try {
 			Statement stmt = con.createStatement();
-			String selectSQL = "SELECT today, numberofproblem\r\n" + 
+			String selectSQL = "SELECT today, numberofproblem, list, rating\r\n" + 
 					"FROM " + infoType + "\r\n" + 
 					"WHERE userid = \'" + userID + "\'\r\n" + 
 					"ORDER BY today ASC\r\n" + 
 					"LIMIT 30;";
 			ResultSet resultSet = stmt.executeQuery(selectSQL);
 			while(resultSet.next()) {
-				ret.add(new String[] {resultSet.getString("today"), resultSet.getString("numberofproblem")});
+				ret.add(new String[] {resultSet.getString("today"), resultSet.getString("numberofproblem"), resultSet.getString("list"), resultSet.getString("rating")});
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
