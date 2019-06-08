@@ -6,6 +6,7 @@ public class Cookie {
 	private static Cookie cookie = new Cookie();
 	public Map<String, String> loginCookie = null;
 	public String userID = null;
+	public int try_login = 0;
 	
 	private Cookie() {
 	}
