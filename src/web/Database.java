@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
-// jsp�뿉�꽌 �벝 �븣 癒쇱� db 媛앹껜瑜� 留뚮뱾�뼱�꽌 db �뿰寃곗쓣 �닔由�
-// db.selectUserInformations濡� user�쓽 �썝�븯�뒗 �젙蹂� �뱾怨좎삤怨�
-// db.getClosed()濡� �닔由쎈맂 �뿰寃� �빐�젣
+
 public class Database {
 	private Connection con = null;
 	private final String DBNAME = "root";
@@ -31,7 +29,7 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	// db �뿰寃� �빐�젣
+
 	public void getClosed() {
 		try {
 			con.close();
@@ -40,7 +38,7 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	// �젙蹂� 諛쏆븘�삤湲�
+	// 오늘로부터 최근 30번 까지 데이터를 DB에서 읽는다.
 	public ArrayList<String[]> readUserdata(final String userID, final String infoType) {
 		ArrayList<String[]> ret = new ArrayList<String[]>();
 		try {
@@ -74,6 +72,22 @@ public class Database {
 		}
 		
 	}
+	// 문제의 분류와 번호를 입력한다.
+	public void insert(String tag, String number) {
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			String insertSQL = "INSERT INTO problemtags(tag, number)"
+					+ " VALUES(' +  " + tag + "','" + number + " ')";
+			stmt.executeUpdate(insertSQL);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			System.out.println(tag + "," + number);
+		}
+	}
+	// DB에 user 정보를 입력한다.
 	public void insert(String userId, final String tableName, ArrayList<String> crawledData ) {
 		String list = "";
 		try {
@@ -87,13 +101,12 @@ public class Database {
 			}
 //			System.out.println(list);
 			String insertSQL = "INSERT INTO " + tableName + "(userid, today, list, numberofproblem)\r\n" + 
-					"VALUES('" + userId + "', sysdate(), '" + list +"', " + crawledData.size() + ")";
+					"VALUES('" + userId + "', sysdate(), '" + list +"', " + crawledData.size() + ")"
+							+ " ON DUPLICATE KEY UPDATE userid='" + userId + "', today=sysdate();";
 			System.out.println(insertSQL);
 //			String selectSQL = "INSERT INTO solvedproblem"
 //					+ " VALUES('" + userId + "', sysdate(),'" + number + "')"
 //					+ " ON DUPLICATE KEY UPDATE userid='" + userId + "', date=sysdate();";
-			
-			// 삽입 불가하면 update 한다
 			stmt.executeUpdate(insertSQL);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
