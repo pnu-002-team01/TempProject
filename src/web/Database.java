@@ -72,7 +72,21 @@ public class Database {
 		}
 		
 	}
-	
+	// 문제의 분류와 번호를 입력한다.
+	public void insert(String tag, String number) {
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			String insertSQL = "INSERT INTO problemtags(tag, number)"
+					+ " VALUES('" + tag + "','" + number + " ')";
+			stmt.executeUpdate(insertSQL);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			System.out.println(tag + "," + number);
+		}
+	}
 	// DB에 user 정보를 입력한다.
 	public void insert(String userId, final String tableName, ArrayList<String> crawledData ) {
 		String list = "";
@@ -100,5 +114,5 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

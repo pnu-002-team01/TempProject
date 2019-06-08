@@ -1,7 +1,9 @@
 package datateam;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +17,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.*;
+
 
 public class BaekjoonCrawler {
 	
@@ -22,134 +26,75 @@ public class BaekjoonCrawler {
 	private static final boolean SHOW_LOG = true;
 	private static final String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36";
 	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	
+	private static final String LOG_PATH = "logs/";
+	private String logName = "";
+	private String logResult = ""; 
 	public Document problemPageDocument = null;
 	private Map<String,String> loginCookie = null;
+	public Map<String, String> map = new HashMap<String, String>();
+	
+	
 	
 	// Constructor
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
+		if(logName == "") {
+			logName = getCurrentTimeString();
+		}
 	}
 	
 	public BaekjoonCrawler(Map<String, String> cookie) {
 		loginCookie = cookie;
+		if(logName == "") {
+			logName = getCurrentTimeString();
+		}
+	}
+	
+	// log-related Methods
+	public void updateLog(final String target) {
+		logResult += "[" + getCurrentTimeString() + "] " + target;
+	}
+	
+	public void exportLog(String Target) {
+		File file = new File(LOG_PATH+logName+".log");	
+		try {
+			FileWriter fw = new FileWriter(file);
+			fw.write(logResult);
+			fw.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// Methods
-	public HashMap<String,String> getMap(){
+	public String getLanguage(String str) throws FileNotFoundException, IOException, ParseException{
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("C++14","88");
-		map.put("Java","3");
-		map.put("Python 3","28");
-		map.put("C11","75");
-		map.put("PyPy3","73");
-		map.put("C","0");
-		map.put("C++","1");
-		map.put("C++11","49");
-		map.put("C++17","84");
-		map.put("Java (OpenJDK)","91");
-		map.put("Java 11","91");
-		map.put("Python 2","6");
-		map.put("PyPy2","32");
-		map.put("Ruby 2.5","68");
-		map.put("Kotlin (JVM)","69");
-		map.put("Kotlin (Native)","92");
-		map.put("Swift","74");
-		map.put("Text","74");
-		map.put("C# 6.0","62");
-		map.put("C# 6.0 (.NET)","86");
-		map.put("node.js","17");
-		map.put("Go","12");
-		map.put("Go (gccgo)","90");
-		map.put("D","29");
-		map.put("F#","37");
-		map.put("PHP","7");
-		map.put("Rust","44");
-		map.put("Rust 2018","94");
-		map.put("Pascal","2");
-		map.put("Scala","15");
-		map.put("Lua","16");
-		map.put("Perl","8");
-		map.put("Perl6","42");
-		map.put("Ruby 1.8","4");
-		map.put("Ruby 1.9","65");
-		map.put("R","72");
-		map.put("Haskell","11");
-		map.put("Object-C","10");
-		map.put("Object-C++","11");
-		map.put("C (Clang)","59");
-		map.put("C++ (Clang)","60");
-		map.put("C++11 (Clang)","66");
-		map.put("C++14 (Clang)","67");
-		map.put("C11 (Clang)","77");
-		map.put("C++17 (Clang)","85");
-		map.put("Ceylon","76");
-		map.put("Golfscript","79");
-		map.put("Octave","89");
-		map.put("Assembly (32bit)","27");
-		map.put("Assembly (64bit)","87");
-		map.put("C# 3.0","9");
-		map.put("VB.NET 2.0","20");
-		map.put("VB.NET 4.0","63");
-		map.put("Bash","5");
-		map.put("Fortran","13");
-		map.put("Scheme","14");
-		map.put("CoffeeScript","18");
-		map.put("Ada","19");
-		map.put("awk","21");
-		map.put("OCaml","22");
-		map.put("Brainfuck","23");
-		map.put("Whitespace","24");
-		map.put("Groovy","25");
-		map.put("Tcl","26");
-		map.put("Commom Lisp","30");
-		map.put("Erlang","31");
-		map.put("Clojure","33");
-		map.put("Rhino","34");  		
-		map.put("Cobol","35");
-		map.put("Smalltalk","36");
-		map.put("SpiderMonkey","38");
-		map.put("Falcon","39");
-		map.put("Factor","40");
-		map.put("Pike","41");
-		map.put("sed","43");
-		map.put("Dart","45");
-		map.put("Boo","46");
-		map.put("Intercal","47");
-		map.put("bc","48");
-		map.put("Oz","50");
-		map.put("Alice","51");
-		map.put("Prolog","52");
-		map.put("Nemerle","53");
-		map.put("Cobra","54");
-		map.put("Nimrod","55");
-		map.put("Forth","56");
-		map.put("Julia","57");
-		map.put("Io","61");
-		map.put("Algol 68","70");
-		map.put("Befunge","71");
-		map.put("FreeBASIC","78");
-		map.put("Gosu","80");
-		map.put("Haxe","81");
-		map.put("LOLCODE","82");
-		map.put("아희","83");
-	    return map;	
+		JSONParser parser = new JSONParser();
+		Object obj = parser.parse(new FileReader(".\\language.json"));
+		JSONObject jsonObject = (JSONObject) obj; 
+		String language = (String)jsonObject.get(str); 
+	    return language;	
+	} 
+	
+	private String getCurrentTimeString() {
+		LocalDate localDate = LocalDate.now();
+		return DTF.format(localDate);
 	}
 	
-	public static void checkInternetConnection() {
+	public void checkInternetConnection() {
 		Document document = null;
 		try {
 			document = Jsoup.connect(MAINURL)
 							.get();
 		} catch(IOException e) {
-			System.err.println("Unable to connect.");
+			updateLog("Unable to connect.");
 		}
 		if(document != null) {
-			System.err.println("Successfully connected to " + MAINURL);
+			updateLog("Successfully connected to " + MAINURL);
 		}
 		else {
-			System.err.println("Failed to receive main page document.");
+			updateLog("Failed to receive main page document.");
 		}
 	}
 	
@@ -167,7 +112,7 @@ public class BaekjoonCrawler {
 			Elements u = User.get(0).getElementsByClass("username");
 			userid = u.get(0).ownText();
 		} catch(IOException e) {
-			System.err.println("Unable to connect.");
+			updateLog("Unable to connect.");
 		}
 		return userid;
 	}
@@ -188,7 +133,7 @@ public class BaekjoonCrawler {
                         .method(Connection.Method.POST)
                         .execute();
 		} catch (IOException e) {
-			System.err.println("Failed to connect login server.");
+			updateLog("Failed to connect login server.");
 		}
 		
 		this.loginCookie = response.cookies();
@@ -201,7 +146,7 @@ public class BaekjoonCrawler {
 	public void receiveProblemDocument(String problemID) {
 		Document document = null;
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		else {
 			try {
@@ -213,7 +158,7 @@ public class BaekjoonCrawler {
 				                .cookies(loginCookie) 
 				                .get();
 			} catch(IOException e) {
-				System.err.println("Failed to crawl problem page");
+				updateLog("Failed to crawl problem page");
 			}
 		}
 		this.problemPageDocument = document;
@@ -223,14 +168,14 @@ public class BaekjoonCrawler {
 		ArrayList<String> algorithms = null;
 		final String TARGET_CSS = "a.spoiler-link";
 		if(problemPageDocument == null) {
-			System.err.println("Problem page document is empty.");
+			updateLog("Problem page document is empty.");
 		}
 		else {
 			algorithms = new ArrayList<String>();
 			Elements algorithmTagList = problemPageDocument.select(TARGET_CSS);
 			for(Element algorithm : algorithmTagList) {
 				if(SHOW_LOG) {
-					System.err.println(algorithm.text());
+					updateLog(algorithm.text());
 				}
 				algorithms.add(algorithm.text());
 			}
@@ -244,7 +189,7 @@ public class BaekjoonCrawler {
 		final String TARGET_CSS = "table#problem-info";
 		final int CATEGORY_LIMIT = 6;
 		if(problemPageDocument == null) {
-			System.err.println("Problem page document is empty.");
+			updateLog("Problem page document is empty.");
 		}
 		else {
 			problemState = new HashMap<String, String>();
@@ -256,7 +201,7 @@ public class BaekjoonCrawler {
 				String value = values.get(i).text();
 				problemState.put(category,value);
 				if(SHOW_LOG) {
-					System.err.println(category + ": " + value);
+					updateLog(category + ": " + value);
 				}
 			}
 
@@ -270,7 +215,7 @@ public class BaekjoonCrawler {
 		ArrayList <String> res = new ArrayList<>();
 		
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		try {
@@ -308,7 +253,7 @@ public class BaekjoonCrawler {
 				res.add(tmp);
 			}
 		} catch(IOException e) {
-			System.err.println("Fail to get User Information");
+			updateLog("Fail to get User Information");
 		}
 		return res;
 	}
@@ -317,7 +262,7 @@ public class BaekjoonCrawler {
 		Document document = null;
 		String source = "";
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		else {
 			try {
@@ -331,19 +276,19 @@ public class BaekjoonCrawler {
 				Elements box = document.getElementsByClass("col-lg-12");
 				source = box.text();
 			} catch(IOException e) {
-				System.err.println("Failed to crawl problem page");
+				updateLog("Failed to crawl problem page");
 			}
 		}
 		return source;
 	}
 	
-public void writeProblemCodes(String problemID, String language){
+public void writeProblemCodes(String problemID, String languageName) throws FileNotFoundException, IOException, ParseException{
 		
 		Document doc = null;
 		JSONObject jsonObject = new JSONObject();
-		
+		String language = getLanguage(languageName);
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		try {
@@ -378,7 +323,7 @@ public void writeProblemCodes(String problemID, String language){
 			}
 			
 		} catch(IOException e) {
-			System.err.println("Fail to get User Information");
+			updateLog("Fail to get User Information");
 		}
 		
 		File file = new File("data/sources/"+problemID+".json");
@@ -400,7 +345,7 @@ public void writeProblemCodes(String problemID, String language){
 		ArrayList < String > res = new ArrayList< String >();
 		
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		try {
@@ -427,7 +372,7 @@ public void writeProblemCodes(String problemID, String language){
 			
 			
 		} catch(IOException e) {
-			System.err.println("Fail to get User Information");
+			updateLog("Fail to get User Information");
 		}
 		return res;
 	}
@@ -438,7 +383,7 @@ public void writeProblemCodes(String problemID, String language){
 		ArrayList < String > res = new ArrayList< String >();
 		
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		try {
@@ -465,7 +410,7 @@ public void writeProblemCodes(String problemID, String language){
 			
 			
 		} catch(IOException e) {
-			System.err.println("Fail to get User Information");
+			updateLog("Fail to get User Information");
 		}
 		return res;
 	}
@@ -475,7 +420,7 @@ public void writeProblemCodes(String problemID, String language){
 		ArrayList < String > res = new ArrayList< String >();
 		res.add("<table><thead></thead><tbody>");
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		try {
@@ -504,7 +449,7 @@ public void writeProblemCodes(String problemID, String language){
 				res.add(tmp);
 			}
 		} catch(IOException e) {
-			System.err.println("Fail to get User Information");
+			updateLog("Fail to get User Information");
 		}
 		res.add("</tbody></table>");
 		return res;
@@ -516,7 +461,7 @@ public void writeProblemCodes(String problemID, String language){
 		ArrayList < String > res = new ArrayList< String >();
 		res.add("<table><thead></thead><tbody>");
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		try {
@@ -545,12 +490,12 @@ public void writeProblemCodes(String problemID, String language){
 			}
 			res.add("</tbody></table>");
 		} catch(IOException e) {
-			System.err.println("Fail to get User Information");
+			updateLog("Fail to get User Information");
 		}
 		return res;
 	}
 	
-	public static ArrayList<String> crawlProblemNumbers() {
+	public ArrayList<String> crawlProblemNumbers() {
 		Document doc = null;		
 
 		ArrayList<String> problemIDList = new ArrayList<>();
@@ -566,16 +511,16 @@ public void writeProblemCodes(String problemID, String language){
 			Elements currentProblemIDList = doc.select(TARGET_CSS);
 			
 			if(SHOW_LOG) {
-				System.err.println("Page number " + pageNumber);
+				updateLog("Page number " + pageNumber);
 			}
 			if(currentProblemIDList.isEmpty()) {
-				System.err.println("Problem Number Crawling Finished.");
+				updateLog("Problem Number Crawling Finished.");
 				break;
 			}
 			for(Element problemID : currentProblemIDList) {
 				problemIDList.add(problemID.text());
 				if(SHOW_LOG) {
-					System.err.println(problemID.text());
+					updateLog(problemID.text());
 				}
 			}
 		}
@@ -585,7 +530,7 @@ public void writeProblemCodes(String problemID, String language){
 	public void writeUserInfoJson( String userID) {
 		
 		if(loginCookie == null) {
-			System.err.println("Login cookie is not acquired.");
+			updateLog("Login cookie is not acquired.");
 		}
 		
 		String jsonResult = "{\n\t\"userID\" : \""+userID+"\",\n";
@@ -621,7 +566,7 @@ public void writeProblemCodes(String problemID, String language){
 		jsonResult += "\n}";
 		
 		if(SHOW_LOG) {
-			System.out.print(jsonResult);
+			updateLog(jsonResult);
 		}
 		
 		//Write problem json as userID.json
@@ -673,7 +618,7 @@ public void writeProblemCodes(String problemID, String language){
 		jsonResult += "\n\t]\n}";
 		
 		if(SHOW_LOG) {
-			System.out.print(jsonResult);
+			updateLog(jsonResult);
 		}
 		
 		//Write problem json as problemID.json
