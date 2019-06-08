@@ -25,12 +25,15 @@
 </head>
 <body>
 <%
+	String company = request.getParameter("company");
+	String type = request.getParameter("type");
 	Cookie ck = Cookie.getInstance();
 	String num = request.getParameter("source");
 	BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
-	CheckDuplication check = new CheckDuplication(num);
+//	CheckDuplication check = new CheckDuplication(num);
 	String code = boj.getSource(num);
 	String[] print_code = code.replace("<", "&lt").replace(">", "&gt").split("\n");
+	System.out.println(company + " " + type + " " + num);
 %>
 <h1>제출 번호 : <%=request.getParameter("source") %></h1>
 <h2>소스 코드</h2>
@@ -44,20 +47,55 @@
 	}
 %>
 </pre>
+<form action="analysis.jsp" id="analysis">
+	<input type="hidden" id="num" name="source">
+	<input type="hidden" id="cp" name="company">
+	<input type="hidden" id="type" name="type">
+</form>
 </div>
-<h2>분석 결과</h2>
+	<h2>분석 결과
+		<span id="sun2"><input id="sun" type="Radio" name="company" value="sun" onclick="analysis()"/> sun</span>
+		<input id="google" type="Radio" name="company" value="google" onclick="analysis()"/> google
+	</h2>
 <div class="code">
 <pre style="margin-left:10px; font-size:15px; font-family:Roboto; line-height:150%">
 <%
-	
+/*
 	if ( check.Check() == 0 ) {
 		SourceAnalysis sa = new SourceAnalysis(request.getParameter("type"));
-		out.print(sa.Analysis(num, code));
+		out.print(sa.Analysis(num, code, "sun"));
 	} else {
 		out.print(check.getResult());
 	}
+*/
+SourceAnalysis sa = new SourceAnalysis(type);
+out.print(sa.Analysis(num, code, company));
 %>
 </pre>
 </div>
 </body>
+<script type="text/javascript">
+	document.getElementById("<%=company%>").checked = true;
+	function analysis() {
+		var cp = document.getElementsByName("company");
+		var value;
+		for ( var i = 0; i < cp.length; i++ )
+			if ( cp[i].checked == true ) {
+				value = cp[i].value;
+				break;
+			}
+		document.getElementById("cp").value = value;
+		document.getElementById("type").value = <%= type %>;
+		document.getElementById("num").value = <%= num %>;
+		document.getElementById("analysis").submit();
+	}
+	function showcpp() {
+		var t = <%= type %>;
+		if ( t == "0" ) {
+			document.getElementById("sun2").style.display = "none";
+			document.getElementById("google").checked = true;
+		}
+	}
+	showcpp();
+</script>
 </html>

@@ -33,21 +33,20 @@
 
 <center>
 	<div id="view-on" style="display:inline">
-	<form action="codecompare.jsp" id="compare">
-			
-	<div style="width:25%">
-		<input type="text" id="code1" name="code1" style="background-color:hsla(0, 0%, 100%, 0.7)">
-		<button class="btn btn-primary" type="submit">소스 비교</button>
-		<input type="text" id="code2" name="code2" style="background-color:hsla(0, 0%, 100%, 0.7)">
+		<form action="codecompare.jsp" id="compare">		
+			<div style="margin-top:20px; width:25%">
+				<input type="text" id="code1" name="code1" style="background-color:hsla(0, 0%, 100%, 0.7)">
+				<button class="btn btn-primary" type="submit">소스 비교</button>
+				<input type="text" id="code2" name="code2" style="background-color:hsla(0, 0%, 100%, 0.7)">
+			</div>
+		</form>
 	</div>
-	</form>
-	</div>
-	
 
 	
 	<form id="analy" action="analysis.jsp" method="post">
 		<input type="hidden" id="source" name="source">
 		<input type="hidden" id="type" name="type">
+		<input type="hidden" value="sun" name="company">
 		<input type="hidden" id="pronum" name="pronum">
 	</form>
 	<form id="send" action="source.jsp" method="post">
