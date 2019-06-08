@@ -15,6 +15,19 @@
 	db.insert(userid, "unsolvedproblem", unproblems_kimjuho);
 	ArrayList<String[]> ans = db.readUserdata(userid, "solvedproblem");
 %>
+
+<%
+	if(ans.size() == 1) {
+		String rating = "1500";
+		String prev = "";
+		String cur = ans.get(0)[2];
+	}
+	else {
+		String rating = ans.get(ans.size() - 2)[3];
+		String cur = ans.get(ans.size() - 1)[2];
+		String prev = ans.get(ans.size() - 2)[2];
+	}
+%>
 <!DOCTYPE html>
 <html>
 <head>
