@@ -78,7 +78,7 @@ public class Database {
 		try {
 			stmt = con.createStatement();
 			String insertSQL = "INSERT INTO problemtags(tag, number)"
-					+ " VALUES(' +  " + tag + "','" + number + " ')";
+					+ " VALUES('" + tag + "','" + number + " ')";
 			stmt.executeUpdate(insertSQL);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
