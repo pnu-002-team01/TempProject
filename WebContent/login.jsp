@@ -26,8 +26,6 @@
 			<div class="inner">
 				<a href="main.jsp" class="logo">BACKJOON.GG</a>
 				<nav id="nav">
-					<a href="#" onclick="myinfo()">내정보</a>
-					<a href="start.jsp" onclick="logout()">로그 아웃</a>
 				</nav>
 			</div>
 		</header>

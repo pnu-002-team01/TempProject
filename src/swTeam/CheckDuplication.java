@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class CheckDuplication {
 	
@@ -60,7 +61,8 @@ public class CheckDuplication {
 	}
 	
 	public String getResult() {
-		String result = "";
+		String r = "";
+		ArrayList<String> result = new ArrayList<>();
 		try {
 			URL url2 = new URL(PUBLIC_IP+"/result/"+num+".txt");
 			URLConnection conn2 = url2.openConnection();
@@ -68,14 +70,16 @@ public class CheckDuplication {
 			String line;
 			while ( (line = rd.readLine()) != null ) {
 				if ( line.contains("java") ) {
-					line = line.replaceAll("[<pre>]*[/\\w]*.java:", "");
+					line = line.replaceAll("\\[[\\w]*\\] /home/ubuntu/workspace/./javasource/[\\w]*.java:", "");
+					line = line.replaceAll(":[0-9]*:",":");
 					line = "Line " + line;
+					result.add(line);
 				} else if ( line.contains("cppsource") ) {
 					line = line.replaceAll("\\[cppsource/[\\w]*.cpp:", "");
 					line = line.replace("]", "");
 					line = "Line " + line;
+					result.add(line);
 				}
-				result += line + "\n";
 			}
 			rd.close();
 		} catch ( MalformedURLException e ) {
@@ -83,6 +87,9 @@ public class CheckDuplication {
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
-		return result;
+		for ( int i = 0; i < result.size()-3; i++ )
+			if ( i > 1 )
+				r += result.get(i) + "\n";
+		return r;
 	}
 }

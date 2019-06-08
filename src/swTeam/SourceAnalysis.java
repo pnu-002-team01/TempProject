@@ -17,7 +17,7 @@ public class SourceAnalysis {
 	private static URL url;
 	private static URLConnection conn;
 	private static int type;
-	private static int remove = 2;
+	private static int remove = 3;
 	
 	public SourceAnalysis(String t) {
 		type = Integer.parseInt(t);
@@ -31,12 +31,13 @@ public class SourceAnalysis {
 		}
 	}
 	
-	public String Analysis(String num, String code) {
+	public String Analysis(String num, String code, String company) {
 		ArrayList<String> result = new ArrayList<>();
 		num = "p"+num;
 		try {
 			String param = URLEncoder.encode("source", "UTF-8")+"="+URLEncoder.encode(num, "UTF-8");
 			param += "&"+URLEncoder.encode("content", "UTF-8")+"="+URLEncoder.encode(code, "UTF-8");
+			param += "&"+URLEncoder.encode("company", "UTF-8")+"="+URLEncoder.encode(company, "UTF-8");
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -55,15 +56,15 @@ public class SourceAnalysis {
 			String line;
 			if ( type == 1 ) {
 				while ( (line = rd.readLine()) != null ) {
-					line = line.replaceAll("[<pre>]*[/\\w]*.java:", "");
+					line = line.replaceAll("\\[[\\w]*\\] /home/ubuntu/workspace/./javasource/[\\w]*.java:", "");
+					line = line.replaceAll(":[0-9]*:",":");
 					line = "Line " + line;
 					result.add(line);
 				}
 			} else {
 				line = rd.readLine();	// Remove the first line that includes file info.
 				while ( (line = rd.readLine()) != null ) {
-					line = line.replaceAll("\\[cppsource/[\\w]*.cpp:", "");
-					line = line.replace("]", "");
+					line = line.replaceAll("./cppsource/[\\w]*.cpp:", "");
 					line = "Line " + line;
 					result.add(line);
 				}
@@ -78,10 +79,9 @@ public class SourceAnalysis {
 		if ( result.isEmpty() )
 			result.add("There is no code smells or Analysis is not done");
 		String r = "";
-		if ( type == 0 )
-			remove = 1;
 		for ( int i = 0; i < result.size()-remove; i++ )
-			r += result.get(i)+"\n";
+			if ( i > 1 )
+				r += result.get(i)+"\n";
 		return r;
 	}
 

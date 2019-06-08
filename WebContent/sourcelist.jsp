@@ -46,6 +46,7 @@
 	<form id="analy" action="analysis.jsp" method="post">
 		<input type="hidden" id="source" name="source">
 		<input type="hidden" id="type" name="type">
+		<input type="hidden" value="sun" name="company">
 		<input type="hidden" id="pronum" name="pronum">
 	</form>
 	<form id="send" action="source.jsp" method="post">
