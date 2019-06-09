@@ -1,4 +1,4 @@
- <%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+ <%@ page import="datateam.BaekjoonCrawler,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -11,9 +11,8 @@
 </head>
 
 <%
-	Cookie ck = Cookie.getInstance();
-	ck.try_login = 0;
-	String userid = ck.userID;
+	String userid = (String)session.getAttribute("name");
+	session.setAttribute("trylogin", 0);
 %>
 
 <body>

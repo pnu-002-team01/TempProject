@@ -1,4 +1,4 @@
-<%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+<%@ page import="datateam.BaekjoonCrawler,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -14,13 +14,9 @@
 </style>
 <body>
 <%
-	Cookie ck = Cookie.getInstance();
-	BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
+	BaekjoonCrawler boj = new BaekjoonCrawler((Map<String, String>)session.getAttribute("cookie"));
 	String proNum = request.getParameter("problem");
-	ArrayList<String> list = boj.getSourceList(ck.userID, proNum);
-	System.out.println(proNum);
-	ArrayList<String> top5 = boj.writeProblemCodes(proNum, "Java");
-	System.out.println(top5.size());
+	ArrayList<String> list = boj.getSourceList((String)session.getAttribute("name"), proNum);
 %>
 	<header id="header">
 		<div class="inner">
@@ -76,6 +72,7 @@
 				</table>
 			</div>
 			<h2 class="text">TOP 5</h2>
+			<h1 style="color:red; font-size:10px">마지막으로 제출한 언어로 작성된 공개된 소스 중 '시간'을 기준으로 빠른 5개의 소스만 보여집니다.</h1>
 			<div class="container">
 				<table class="table">
 						<thead>
@@ -90,10 +87,11 @@
 						</thead>
 						<tbody>
 							<%
+								String lang = boj.getLastLanguage().trim();
+								ArrayList<String> top5 = boj.writeProblemCodes(proNum, lang);
 								for ( int i = 0; i < top5.size(); i++ ) {
 									out.println(top5.get(i));
 								}
-							
 							%>		
 						</tbody>
 				</table>
