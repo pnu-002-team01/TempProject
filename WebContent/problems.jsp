@@ -16,18 +16,6 @@
 	ArrayList<String[]> ans = db.readUserdata(userid, "solvedproblem");
 %>
 
-<%
-	if(ans.size() == 1) {
-		String rating = "1500";
-		String prev = "";
-		String cur = ans.get(0)[2];
-	}
-	else {
-		String rating = ans.get(ans.size() - 2)[3];
-		String cur = ans.get(ans.size() - 1)[2];
-		String prev = ans.get(ans.size() - 2)[2];
-	}
-%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,7 +38,20 @@
 	    data.addColumn('number', '푼 문제 수');
 	    <%
 		    for(int i = 0 ; i < ans.size(); ++i) {
-		    	out.println("data.addRow([\'" +ans.get(i)[0] + "\', " + ans.get(i)[1] + "]);");
+		    	if(ans.get(i)[3] == null) {
+		    		String tmp = "1500";
+		    		if(i == 0) {
+		    			tmp = Float.toString(boj.calcRating("", ans.get(i)[2], tmp) );
+		    		}
+		    		else {
+		    			tmp = Float.toString(boj.calcRating(ans.get(i - 1)[2], ans.get(i)[2], tmp) );
+		    		}
+		    		db.update(userid, "solvedproblem", tmp);
+		    		out.println("data.addRow([\'" +ans.get(i)[0] + "\', " + Float.parseFloat(tmp) + "]);");
+		    	}
+		    	else {
+		    		out.println("data.addRow([\'" +ans.get(i)[0] + "\', " + ans.get(i)[3] + "]);");
+		    	}
 		    }
 	    %>
 	    var options = {
