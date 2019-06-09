@@ -11,7 +11,6 @@
 </head>
 <style type=text/css>
 	#view-on {width: 150px; height: 30px;}
-	
 </style>
 <body>
 <%
@@ -19,14 +18,16 @@
 	BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
 	String proNum = request.getParameter("problem");
 	ArrayList<String> list = boj.getSourceList(ck.userID, proNum);
+	System.out.println(proNum);
+	ArrayList<String> top5 = boj.writeProblemCodes(proNum, "Java");
+	System.out.println(top5.size());
 %>
-
 	<header id="header">
 		<div class="inner">
 			<a href="main.jsp" class="logo">BACKJOON.GG</a>
 			<nav id="nav">
-				<a href="main.jsp">메인</a>
-				<a href="">링크 1</a>
+				<a href="problems.jsp">내정보</a>
+				<a href="login.jsp">로그 아웃</a>
 			</nav>
 		</div>
 	</header>
@@ -70,6 +71,29 @@
 								for ( int i = 0; i < list.size(); i++ ) {
 									out.println(list.get(i));
 								}
+							%>		
+						</tbody>
+				</table>
+			</div>
+			<h2 class="text">TOP 5</h2>
+			<div class="container">
+				<table class="table">
+						<thead>
+							<tr>
+								<th>등 수</th>
+								<th>아이디</th>
+								<th>시 간</th>
+								<th>언 어</th>
+								<th>제출 시간</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+								for ( int i = 0; i < top5.size(); i++ ) {
+									out.println(top5.get(i));
+								}
+							
 							%>		
 						</tbody>
 				</table>
