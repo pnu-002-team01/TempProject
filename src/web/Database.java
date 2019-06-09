@@ -61,8 +61,9 @@ public class Database {
 	}
 	public void update(String userId, final String tableName, final String rating) {
 		String updateSQL = "UPDATE " + tableName + "\r\n"
-				+ "SET rating = '" + rating + "' , "
-				+ "WEHRE userid = " + userId + "AND today = sysdate()";
+				+ "SET rating = '" + rating + "'\r\n"
+				+ "WHERE userid = \'" + userId + "\' AND today = sysdate()";
+		System.out.println(updateSQL);
 		try {
 			Statement stmt = con.createStatement();
 			stmt.executeUpdate(updateSQL);
