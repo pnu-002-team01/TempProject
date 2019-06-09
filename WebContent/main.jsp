@@ -25,8 +25,8 @@
 					<a href="main.jsp" class="logo">BACKJOON.GG</a>
 					<nav id="nav">
 						<!-- <a href="main.jsp">메인</a> -->
-						<a href="#" onclick="myinfo()">내정보</a>
-						<a href="login.jsp" onclick="logout()">로그 아웃</a>
+						<a href="problems.jsp">내정보</a>
+						<a href="login.jsp">로그 아웃</a>
 					</nav>
 				</div>
 			</header>
@@ -45,8 +45,5 @@
 <script src="assets/js/main.js"></script>
 	
 <script type="text/javascript">
-	function myinfo() {
-		document.getElementById("problem").submit();
-	}
 </script>
 </html>
