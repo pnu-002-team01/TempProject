@@ -59,9 +59,9 @@ public class Database {
 		}
 		return ret;
 	}
-	public void update(String userId, final String tableName, final String list, final int size) {
+	public void update(String userId, final String tableName, final String rating) {
 		String updateSQL = "UPDATE " + tableName + "\r\n"
-				+ "SET list = '" + list + "' , " + size
+				+ "SET rating = '" + rating + "' , "
 				+ "WEHRE userid = " + userId + "AND today = sysdate()";
 		try {
 			Statement stmt = con.createStatement();
@@ -70,7 +70,6 @@ public class Database {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	// 문제의 분류와 번호를 입력한다.
 	public void insert(String tag, String number) {
@@ -110,7 +109,7 @@ public class Database {
 			stmt.executeUpdate(insertSQL);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			update(userId, tableName, list, crawledData.size());
+			
 			e.printStackTrace();
 		}
 	}
