@@ -58,7 +58,7 @@ public class BaekjoonCrawler {
 		logResult += "[" + getCurrentTimeString() + "] " + target;
 	}
 	
-	public void exportLog(String Target) {
+	public void exportLog() {
 		File file = new File(LOG_PATH+logName+".log");	
 		try {
 			FileWriter fw = new FileWriter(file);
@@ -633,6 +633,34 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public float calcRating(String prevProblem, String thisProblem,String exRating) {
+		float floatExRating = Float.parseFloat(exRating);
+		float rating= floatExRating;
+		prevProblem = prevProblem.replace(" ","");
+		thisProblem = thisProblem.replace(" ","");
+		String[] prevProbList = prevProblem.split(",");
+		String[] thisProbList = thisProblem.split(",");
+		ArrayList < String > prevList = new ArrayList<>(Arrays.asList(prevProbList)); 
+		ArrayList < String > thisList = new ArrayList<>(Arrays.asList(thisProbList)); 
+		
+		thisList.removeAll(prevList);
+		
+		for( String item: thisList) {
+			float temp = Integer.parseInt(problemRating.get(item));
+			if(temp == -1) continue; // 레이팅 측정 안 된 경우
+			rating += (temp/floatExRating) * 25;
+		}
+		System.err.println(rating);
+		return rating;
+	}
+	
+	public static void main(String[] args) {
+		BaekjoonCrawler bojcrawl = new BaekjoonCrawler("Guest","guest");
+		bojcrawl.calcRating("","1131,1000,1001,1002","1500");
+		bojcrawl.updateLog("test");
+		bojcrawl.exportLog();
 		
 	}
 }
