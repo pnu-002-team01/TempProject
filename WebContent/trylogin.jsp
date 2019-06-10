@@ -15,9 +15,8 @@ String pw = request.getParameter("pw");
 BaekjoonCrawler bj = new BaekjoonCrawler(id, pw);
 Map<String, String> cookie = bj.getCookie();
 if ( cookie.containsKey("bojautologin") ) {
-	session.setAttribute("boj", bj);
 	session.setAttribute("cookie", cookie);
-	session.setAttribute("name", bj.getuserID());
+	session.setAttribute("name", id);
 	session.setAttribute("trylogin", 0);
 }
 %>

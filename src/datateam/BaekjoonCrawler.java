@@ -106,7 +106,7 @@ public class BaekjoonCrawler {
 	                .header("Upgrade-Insecure-Requests", "1")	
 	                .cookies(loginCookie) 
 	                .get();
-			Elements User = document.getElementsByClass("pull-right");
+			Elements User = document.getElementsByClass("container");
 			Elements u = User.get(0).getElementsByClass("username");
 			userid = u.get(0).ownText();
 		} catch(IOException e) {
