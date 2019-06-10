@@ -28,10 +28,10 @@ public class BaekjoonCrawler {
 	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String LOG_PATH = "logs/";
 	private String logName = "";
-	private String logResult = ""; 
+	private String logResult = "";
 	public Document problemPageDocument = null;
 	private Map<String,String> loginCookie = null;
-	public Map<String, String> languageMap = new HashMap<String, String>();
+	private String language = "";
 	
 	// Constructor
 	public BaekjoonCrawler(String userID, String userPassword) {
@@ -40,8 +40,6 @@ public class BaekjoonCrawler {
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
-		languageMap.put("C++14" , "88");
-		languageMap.put("Java" , "3");
 	}
 	
 	public BaekjoonCrawler(Map<String, String> cookie) {
@@ -49,8 +47,6 @@ public class BaekjoonCrawler {
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
-		languageMap.put("C++14" , "88");
-		languageMap.put("Java" , "3");
 	}
 	
 	// log-related Methods
@@ -71,17 +67,13 @@ public class BaekjoonCrawler {
 	
 	// Methods
 	public String getLanguage(String str) throws FileNotFoundException, IOException, ParseException{
-		//HashMap<String, String> map = new HashMap<String, String>();
-		//JSONParser parser = new JSONParser();
-		
-		//File path = new File("");
-		//System.err.println(path.getAbsolutePath());
-		//Object obj = parser.parse(new FileReader("language.json"));
-		//JSONObject jsonObject = (JSONObject) obj; 
-		//String language = (String)jsonObject.get(str); 
-	    String language = languageMap.get(str);
-		return language;	
-	} 
+		JSONParser parser = new JSONParser();
+		String path = this.getClass().getResource("").getPath() + "language.json";
+		Object obj = parser.parse(new FileReader(path));
+		JSONObject json = (JSONObject) obj;
+		String language = (String)json.get(str);
+		return language;
+	}
 	
 	private String getCurrentTimeString() {
 		LocalDate localDate = LocalDate.now();
@@ -114,7 +106,7 @@ public class BaekjoonCrawler {
 	                .header("Upgrade-Insecure-Requests", "1")	
 	                .cookies(loginCookie) 
 	                .get();
-			Elements User = document.getElementsByClass("pull-right");
+			Elements User = document.getElementsByClass("container");
 			Elements u = User.get(0).getElementsByClass("username");
 			userid = u.get(0).ownText();
 		} catch(IOException e) {
@@ -248,7 +240,10 @@ public class BaekjoonCrawler {
 					tmp += "<td>"+cols.get(5).text()+" ms"+"</td>";
 				else
 					tmp += "<td></td>";
-				tmp += "<td>"+cols.get(6).text().replace(" / 수정", "")+"</td>";
+				String lang = cols.get(6).text().replace(" / 수정", "");
+				if ( i == 1 )
+					language = lang;
+				tmp += "<td>"+lang+"</td>";
 				tmp += "<td>"+cols.get(8).text()+"</td>";
 				String val = "0";
 				if ( cols.get(6).text().contains("Java") )
@@ -262,6 +257,10 @@ public class BaekjoonCrawler {
 			updateLog("Fail to get User Information");
 		}
 		return res;
+	}
+	
+	public String getLastLanguage() {
+		return this.language;
 	}
 	
 	public String getSource(String solveNum) {

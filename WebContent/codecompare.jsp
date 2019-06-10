@@ -1,4 +1,4 @@
-<%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,swTeam.CodeCompare,swTeam.SourceAnalysis,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+<%@ page import="datateam.BaekjoonCrawler,swTeam.CodeCompare,swTeam.SourceAnalysis,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html>
 <html>
@@ -18,8 +18,7 @@
 </head>
 <body>
 <%
-	Cookie ck = Cookie.getInstance();
-   BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
+BaekjoonCrawler boj = new BaekjoonCrawler((Map<String, String>)session.getAttribute("cookie"));
    String code1 = boj.getSource(request.getParameter("code1"));
    String code2 = boj.getSource(request.getParameter("code2"));
    CodeCompare cp = new CodeCompare(code1, code2);

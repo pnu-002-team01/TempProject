@@ -1,4 +1,4 @@
-<%@ page import="datateam.BaekjoonCrawler, datateam.Cookie, swTeam.*, java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+<%@ page import="datateam.BaekjoonCrawler, swTeam.*, java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html>
 <html>
@@ -27,10 +27,8 @@
 <%
 	String company = request.getParameter("company");
 	String type = request.getParameter("type");
-	Cookie ck = Cookie.getInstance();
 	String num = request.getParameter("source");
-	BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
-//	CheckDuplication check = new CheckDuplication(num);
+	BaekjoonCrawler boj = new BaekjoonCrawler((Map<String, String>)session.getAttribute("cookie"));
 	String code = boj.getSource(num);
 	String[] print_code = code.replace("<", "&lt").replace(">", "&gt").split("\n");
 	System.out.println(company + " " + type + " " + num);
