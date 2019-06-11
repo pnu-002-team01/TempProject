@@ -1,4 +1,4 @@
- <%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+ <%@ page import="datateam.BaekjoonCrawler,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -13,12 +13,12 @@
 String id = request.getParameter("id");
 String pw = request.getParameter("pw");
 BaekjoonCrawler bj = new BaekjoonCrawler(id, pw);
-Cookie ck = Cookie.getInstance();
-ck.try_login++;
+session.setAttribute("trylogin", 1);
 Map<String, String> cookie = bj.getCookie();
 if ( cookie.containsKey("bojautologin") ) {
-	ck.setCookie(cookie);
-	ck.setUserId(bj.getuserID());
+	session.setAttribute("cookie", cookie);
+	session.setAttribute("name", id);
+	session.setAttribute("trylogin", 0);
 }
 %>
 <script>location.href = "start.jsp"; </script>

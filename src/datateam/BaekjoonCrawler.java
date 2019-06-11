@@ -30,19 +30,17 @@ public class BaekjoonCrawler {
 	private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String LOG_PATH = "logs/";
 	private String logName = "";
-	private String logResult = ""; 
+	private String logResult = "";
 	public Document problemPageDocument = null;
 	private Map<String,String> loginCookie = null;
-	
-	public Map<String, String> problemRating = new HashMap<String, String>();
-	
-	
+	private Map<String,Integer> problemRating = null;
+	private String language = "";
 	
 	// Constructor
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
-		requestProblemRating();
+    acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -74,33 +72,32 @@ public class BaekjoonCrawler {
 	}
 	
 	// Methods
-	
-	public void requestProblemRating() {
-		 try{
-			 	File path = new File("");
-	            File file = new File(path.getAbsolutePath()+"\\stats\\ratings.txt");
-	            FileReader filereader = new FileReader(file);
-	            BufferedReader bufReader = new BufferedReader(filereader);
-	            String line = "";
-	            while((line = bufReader.readLine()) != null){
-	                String[] list = line.split(":");
-	                problemRating.put(list[0],list[1]);
-	            }
-	            bufReader.close();
-	        }catch (FileNotFoundException e) {
-	            // TODO: handle exception
-	        }catch(IOException e){
-	            System.out.println(e);
-	        }
+	public void acquireProblemRatings() {
+    problemRating = new HashMap<String, String>();
+		File file = new File("stats/ratings.txt");
+		try {
+			FileReader fr = new FileReader(file);
+			BufferedReader bufReader = new BufferedReader(fr);
+			String line = "";
+			while((line = bufReader.readLine()) != null) {
+				String[] data = line.split(":");
+				problemRating.put(data[0], Integer.parseInt(data[1]));
+			} 
+			bufReader.close();
+		} catch(FileNotFoundException e) {
+			updateLog("Rating file not found.");
+		} catch(IOException e) {
+			updateLog("IO Exceptoin at ratings.txt");
+		}
 	}
-	
 	public String getLanguage(String str) throws FileNotFoundException, IOException, ParseException{
 		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(new FileReader(".\\language.json"));
-		JSONObject jsonObject = (JSONObject) obj; 
-		String language = (String)jsonObject.get(str); 
-	    return language;	
-	} 
+		String path = this.getClass().getResource("").getPath() + "language.json";
+		Object obj = parser.parse(new FileReader(path));
+		JSONObject json = (JSONObject) obj;
+		String language = (String)json.get(str);
+		return language;
+	}
 	
 	private String getCurrentTimeString() {
 		LocalDate localDate = LocalDate.now();
@@ -133,7 +130,7 @@ public class BaekjoonCrawler {
 	                .header("Upgrade-Insecure-Requests", "1")	
 	                .cookies(loginCookie) 
 	                .get();
-			Elements User = document.getElementsByClass("pull-right");
+			Elements User = document.getElementsByClass("container");
 			Elements u = User.get(0).getElementsByClass("username");
 			userid = u.get(0).ownText();
 		} catch(IOException e) {
@@ -267,7 +264,10 @@ public class BaekjoonCrawler {
 					tmp += "<td>"+cols.get(5).text()+" ms"+"</td>";
 				else
 					tmp += "<td></td>";
-				tmp += "<td>"+cols.get(6).text().replace(" / 수정", "")+"</td>";
+				String lang = cols.get(6).text().replace(" / 수정", "");
+				if ( i == 1 )
+					language = lang;
+				tmp += "<td>"+lang+"</td>";
 				tmp += "<td>"+cols.get(8).text()+"</td>";
 				String val = "0";
 				if ( cols.get(6).text().contains("Java") )
@@ -281,6 +281,10 @@ public class BaekjoonCrawler {
 			updateLog("Fail to get User Information");
 		}
 		return res;
+	}
+	
+	public String getLastLanguage() {
+		return this.language;
 	}
 	
 	public String getSource(String solveNum) {
@@ -307,11 +311,12 @@ public class BaekjoonCrawler {
 		return source;
 	}
 	
-public void writeProblemCodes(String problemID, String languageName) throws FileNotFoundException, IOException, ParseException{
+public ArrayList<String> writeProblemCodes(String problemID, String languageName) throws Exception {
 		
 		Document doc = null;
-		JSONObject jsonObject = new JSONObject();
 		String language = getLanguage(languageName);
+		ArrayList<String> res = new ArrayList<>();
+		
 		if(loginCookie == null) {
 			updateLog("Login cookie is not acquired.");
 		}
@@ -329,39 +334,34 @@ public void writeProblemCodes(String problemID, String languageName) throws File
 						
 			Elements elements = doc.getElementsByTag("tr");
 			int count = 0;		
-			for( Element e: elements ) {
+			for ( Element e: elements ) {
 				Elements tdElements = e.select("td");
 				if(tdElements.size() > 5) {
-			
 					Elements temp1 = tdElements.get(6).select("a");
-		
 					if(!temp1.isEmpty()) {
-						String rank = tdElements.get(0).text();
-						String sumitNum = temp1.get(1).text();
-						String source = getSource(sumitNum);
-						String key = "code"+rank;
-						jsonObject.put(key, source);
+						String tmp = "<tr onclick='setcompare("+tdElements.get(1).ownText()+")' onMouseOver=\"this.style.backgroundColor='#FFF4E9';\" onMouseOut=\"this.style.backgroundColor=''\">";
+						tmp += "<td>"+tdElements.get(0).text()+"</td>";
+						tmp += "<td><a>"+tdElements.get(3).select("a").text()+"</a></td>";
+						tmp += "<td>"+tdElements.get(5).text()+" ms"+"</td>";
+						tmp += "<td>"+tdElements.get(6).text().replace(" / 수정", "")+"</td>";
+						tmp += "<td>"+tdElements.get(8).text()+"</td>";
+						String val = "0";
+						if ( tdElements.get(6).text().contains("Java") )
+							val = "1";
+						tmp += "<td><a href='#' ";
+						tmp += "onclick=\"analysis("+tdElements.get(1).ownText()+","+val+")\">소스 분석</a></td>";
+						tmp += "</tr>";
+						res.add(tmp);
 						count++;
 					}
 				}
 				if(count >= 5) break;
 			}
-			
-		} catch(IOException e) {
+		} catch ( IOException e ) {
 			updateLog("Fail to get User Information");
 		}
 		
-		File file = new File("data/sources/"+problemID+".json");
-		
-		try {
-			FileWriter fw = new FileWriter(file);
-			fw.write(jsonObject.toString());
-			fw.close();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		
-		return;
+		return res;
 	}
 	
 	public ArrayList<String> crawlSolvedProblem_kimjuho(String userID) {
@@ -597,7 +597,7 @@ public void writeProblemCodes(String problemID, String languageName) throws File
 		//Write problem json as userID.json
 		File file = new File("data/users/"+userID+".json");
 		
-		try {
+		s
 			FileWriter fw = new FileWriter(file);
 			fw.write(jsonResult);
 			fw.close();
@@ -671,19 +671,12 @@ public void writeProblemCodes(String problemID, String languageName) throws File
 		thisList.removeAll(prevList);
 		
 		for( String item: thisList) {
-			float temp = Integer.parseInt(problemRating.get(item));
+			int temp = problemRating.get(item);
 			if(temp == -1) continue; // 레이팅 측정 안 된 경우
-			rating += (temp/floatExRating) * 25;
+			rating += ((float)temp/floatExRating) * 25;
 		}
-		//System.err.println(rating);
+		updateLog("rating" + Integer.toString(rating));
 		return rating;
 	}
-	
-	public static void main(String[] args) {
-		BaekjoonCrawler bojcrawl = new BaekjoonCrawler("Guest","guest");
-		bojcrawl.calcRating("","1131,1000,1001,1002","1500");
-		bojcrawl.updateLog("test");
-		bojcrawl.exportLog();
-		
-	}
+
 }

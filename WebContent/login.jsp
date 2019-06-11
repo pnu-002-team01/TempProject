@@ -1,4 +1,4 @@
- <%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+ <%@ page import="datateam.BaekjoonCrawler,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -10,10 +10,10 @@
 </head>
 
 <%
-	Cookie ck = Cookie.getInstance();
-	ck.logout();
 	String log = "";
-	if ( ck.try_login == 0 ) {
+	session.removeAttribute("cookie");
+	session.removeAttribute("name");
+	if ( session.getAttribute("trylogin") == null || (int)session.getAttribute("trylogin") == 0 ) {
 		log = "none";
 	} else {
 		log = "block";
@@ -24,10 +24,8 @@
 	<form id="problem" action="problems.jsp" method="post" style="display:none"></form>
 		<header id="header">
 			<div class="inner">
-				<a href="main.jsp" class="logo">BACKJOON.GG</a>
+				<a href="start.jsp" class="logo">BACKJOON.GG</a>
 				<nav id="nav">
-					<a href="#" onclick="myinfo()">내정보</a>
-					<a href="start.jsp" onclick="logout()">로그 아웃</a>
 				</nav>
 			</div>
 		</header>
@@ -63,7 +61,7 @@
 <script src="assets/js/skel.min.js"></script>
 <script src="assets/js/util.js"></script>
 <script src="assets/js/main.js"></script>
-	
+z
 <script type="text/javascript">
 </script>
 </html>

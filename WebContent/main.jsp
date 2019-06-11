@@ -1,4 +1,4 @@
- <%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+ <%@ page import="datateam.BaekjoonCrawler,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -11,9 +11,8 @@
 </head>
 
 <%
-	Cookie ck = Cookie.getInstance();
-	ck.try_login = 0;
-	String userid = ck.userID;
+	String userid = (String)session.getAttribute("name");
+	session.setAttribute("trylogin", 0);
 %>
 
 <body>
@@ -22,11 +21,11 @@
 		
 			<header id="header">
 				<div class="inner">
-					<a href="main.jsp" class="logo">BACKJOON.GG</a>
+					<a href="start.jsp" class="logo">BACKJOON.GG</a>
 					<nav id="nav">
 						<!-- <a href="main.jsp">메인</a> -->
-						<a href="#" onclick="myinfo()">내정보</a>
-						<a href="login.jsp" onclick="logout()">로그 아웃</a>
+						<a href="problems.jsp">내정보</a>
+						<a href="login.jsp">로그 아웃</a>
 					</nav>
 				</div>
 			</header>
@@ -45,8 +44,5 @@
 <script src="assets/js/main.js"></script>
 	
 <script type="text/javascript">
-	function myinfo() {
-		document.getElementById("problem").submit();
-	}
 </script>
 </html>

@@ -1,4 +1,4 @@
-<%@ page import="datateam.BaekjoonCrawler,datateam.Cookie,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+<%@ page import="datateam.BaekjoonCrawler,java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -11,22 +11,19 @@
 </head>
 <style type=text/css>
 	#view-on {width: 150px; height: 30px;}
-	
 </style>
 <body>
 <%
-	Cookie ck = Cookie.getInstance();
-	BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
+	BaekjoonCrawler boj = new BaekjoonCrawler((Map<String, String>)session.getAttribute("cookie"));
 	String proNum = request.getParameter("problem");
-	ArrayList<String> list = boj.getSourceList(ck.userID, proNum);
+	ArrayList<String> list = boj.getSourceList((String)session.getAttribute("name"), proNum);
 %>
-
 	<header id="header">
 		<div class="inner">
-			<a href="main.jsp" class="logo">BACKJOON.GG</a>
+			<a href="start.jsp" class="logo">BACKJOON.GG</a>
 			<nav id="nav">
-				<a href="main.jsp">메인</a>
-				<a href="">링크 1</a>
+				<a href="problems.jsp">내정보</a>
+				<a href="login.jsp">로그 아웃</a>
 			</nav>
 		</div>
 	</header>
@@ -65,10 +62,35 @@
 								<th></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody style="color:black">
 							<%
 								for ( int i = 0; i < list.size(); i++ ) {
 									out.println(list.get(i));
+								}
+							%>		
+						</tbody>
+				</table>
+			</div>
+			<h2 class="text">TOP 5</h2>
+			<h1 style="color:red; font-size:10px">마지막으로 제출한 언어로 작성된 공개된 소스 중 '시간'을 기준으로 빠른 5개의 소스만 보여집니다.</h1>
+			<div class="container">
+				<table class="table">
+						<thead>
+							<tr>
+								<th>등 수</th>
+								<th>아이디</th>
+								<th>시 간</th>
+								<th>언 어</th>
+								<th>제출 시간</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody style="color:black">
+							<%
+								String lang = boj.getLastLanguage().trim();
+								ArrayList<String> top5 = boj.writeProblemCodes(proNum, lang);
+								for ( int i = 0; i < top5.size(); i++ ) {
+									out.println(top5.get(i));
 								}
 							%>		
 						</tbody>

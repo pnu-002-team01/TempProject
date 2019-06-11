@@ -1,8 +1,9 @@
-<%@ page import="datateam.BaekjoonCrawler, datateam.Cookie, swTeam.*, java.util.*" language="java" contentType="text/html; charset=EUC-KR"
+<%@ page import="datateam.BaekjoonCrawler, swTeam.*, java.util.*" language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="assets/css/analysis.css" />
    <style>
       .code {
          border:inset 2px silver; 
@@ -21,24 +22,32 @@
       }
    </style>
 <meta charset="EUC-KR">
-<title>Insert title here</title>
+<title>BAEKJOON.GG</title>
 </head>
 <body>
+
+		<header id="header">
+				<div class="inner">
+					<a href="main.jsp" class="logo">BACKJOON.GG</a>
+					<nav id="nav">
+						<a href="problems.jsp">내정보</a>
+						<a href="login.jsp">로그 아웃</a>
+					</nav>
+				</div>
+			</header>
 <%
 	String company = request.getParameter("company");
 	String type = request.getParameter("type");
-	Cookie ck = Cookie.getInstance();
 	String num = request.getParameter("source");
-	BaekjoonCrawler boj = new BaekjoonCrawler(ck.loginCookie);
-//	CheckDuplication check = new CheckDuplication(num);
+	BaekjoonCrawler boj = new BaekjoonCrawler((Map<String, String>)session.getAttribute("cookie"));
 	String code = boj.getSource(num);
 	String[] print_code = code.replace("<", "&lt").replace(">", "&gt").split("\n");
 	System.out.println(company + " " + type + " " + num);
 %>
-<h1>제출 번호 : <%=request.getParameter("source") %></h1>
-<h2>소스 코드</h2>
+<h1 style="color:black">제출 번호 : <%=request.getParameter("source") %></h1>
+<h2 style="color:black">소스 코드</h2>
 <div class="code">
-<pre style="font-size:15px; font-family:Roboto">
+<pre style="font-size:15px; font-family:Roboto; color:black">
 <%
 	for ( int i = 1; i <= print_code.length; i++ ) {
 		out.print("<span class='nodrag' style='display:inline-block; width:30px; text-align:center; font:bold; background-color:gray; color:white'>");
@@ -53,12 +62,15 @@
 	<input type="hidden" id="type" name="type">
 </form>
 </div>
-	<h2>분석 결과
-		<span id="sun2"><input id="sun" type="Radio" name="company" value="sun" onclick="analysis()"/> sun</span>
+	<h2 style="color:black">분석 결과</h2>
+	<h4 style="color:black">
+		<input id="sun" type="Radio" name="company" value="sun" onclick="analysis()"/> sun
 		<input id="google" type="Radio" name="company" value="google" onclick="analysis()"/> google
-	</h2>
+		</h4>
+		
+
 <div class="code">
-<pre style="margin-left:10px; font-size:15px; font-family:Roboto; line-height:150%">
+<pre style="color:black; margin-left:10px; font-size:15px; font-family:Roboto; line-height:150%">
 <%
 /*
 	if ( check.Check() == 0 ) {
