@@ -40,6 +40,7 @@ public class BaekjoonCrawler {
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
+    acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -47,10 +48,12 @@ public class BaekjoonCrawler {
 	
 	public BaekjoonCrawler(Map<String, String> cookie) {
 		loginCookie = cookie;
+		requestProblemRating();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
 	}
+	
 	
 	// log-related Methods
 	public void updateLog(final String target) {
@@ -70,13 +73,14 @@ public class BaekjoonCrawler {
 	
 	// Methods
 	public void acquireProblemRatings() {
+    problemRating = new HashMap<String, String>();
 		File file = new File("stats/ratings.txt");
 		try {
 			FileReader fr = new FileReader(file);
 			BufferedReader bufReader = new BufferedReader(fr);
 			String line = "";
 			while((line = bufReader.readLine()) != null) {
-				String[] data = line.split("\\s");
+				String[] data = line.split(":");
 				problemRating.put(data[0], Integer.parseInt(data[1]));
 			} 
 			bufReader.close();
@@ -593,7 +597,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		//Write problem json as userID.json
 		File file = new File("data/users/"+userID+".json");
 		
-		try {
+		s
 			FileWriter fw = new FileWriter(file);
 			fw.write(jsonResult);
 			fw.close();
@@ -671,7 +675,8 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 			if(temp == -1) continue; // 레이팅 측정 안 된 경우
 			rating += ((float)temp/floatExRating) * 25;
 		}
-		System.err.println(Float.toString(rating));
+		updateLog("rating" + Integer.toString(rating));
 		return rating;
 	}
+
 }

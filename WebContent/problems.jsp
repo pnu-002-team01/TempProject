@@ -14,6 +14,7 @@
 	db.insert(userid, "unsolvedproblem", unproblems_kimjuho);
 	ArrayList<String[]> ans = db.readUserdata(userid, "solvedproblem");
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,16 +33,29 @@
 	google.charts.setOnLoadCallback(drawChart);	
 	function drawChart() {
 	    var data = new google.visualization.DataTable();
-	    data.addColumn('string', '');
-	    data.addColumn('number', '푼 문제 수');
+	    data.addColumn('string', '날짜');
+	    data.addColumn('number', '레이팅');
 	    <%
 		    for(int i = 0 ; i < ans.size(); ++i) {
-		    	out.println("data.addRow([\'" +ans.get(i)[0] + "\', " + ans.get(i)[1] + "]);");
+		    	if(ans.get(i)[3] == null) {
+		    		String tmp;
+		    		if(i == 0) {
+		    			tmp = Float.toString(boj.calcRating("", ans.get(i)[2], "1500") );
+		    		}
+		    		else {
+		    			tmp = Float.toString(boj.calcRating(ans.get(i - 1)[2], ans.get(i)[2], ans.get(i - 1)[3]) );
+		    		}
+		    		db.update(userid, "solvedproblem", tmp);
+		    		out.println("data.addRow([\'" +ans.get(i)[0] + "\', " + Float.parseFloat(tmp) + "]);");
+		    	}
+		    	else {
+		    		out.println("data.addRow([\'" +ans.get(i)[0] + "\', " + ans.get(i)[3] + "]);");
+		    	}
 		    }
 	    %>
 	    var options = {
 			chart: {
-	        	title: '<%=userid%>' + '님이 푼 문제 수 그래프',
+	        	title: '<%=userid%>' + '님의 레이팅 그래프',
 			},
 	      	width: 700,
 	      	height: 400
