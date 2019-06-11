@@ -19,11 +19,8 @@ public class problemTags {
 		JSONParser parser = new JSONParser();
 		Database db = new Database();
 		try {
-            //파일 객체 생성
 			File problem = new File("C:\\Users\\ksaid\\git\\TempProject\\stats\\problemNumber.txt");
-            //입력 스트림 생성
             FileReader filereader = new FileReader(problem);
-            //입력 버퍼 생성
             BufferedReader bufReader = new BufferedReader(filereader);
             
             Iterator<String> iterator;
@@ -47,7 +44,6 @@ public class problemTags {
 					//System.out.println(iterator.next() + " : " + line);
 				}
             }
-            //.readLine()은 끝에 개행문자를 읽지 않는다.
             bufReader.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

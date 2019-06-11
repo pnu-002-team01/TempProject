@@ -38,7 +38,6 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	// 오늘로부터 최근 30번 까지 데이터를 DB에서 읽는다.
 	public ArrayList<String[]> readUserdata(final String userID, final String infoType) {
 		ArrayList<String[]> ret = new ArrayList<String[]>();
 		try {
@@ -72,7 +71,6 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	// 문제의 분류와 번호를 입력한다.
 	public void insert(String tag, String number) {
 		Statement stmt;
 		try {
@@ -87,7 +85,6 @@ public class Database {
 			System.out.println(tag + "," + number);
 		}
 	}
-	// DB에 user 정보를 입력한다.
 	public void insert(String userId, final String tableName, ArrayList<String> crawledData ) {
 		String list = "";
 		try {

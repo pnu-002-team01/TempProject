@@ -322,7 +322,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		}
 		
 		try {
-			// 1페이지에 공개코드가 5개 이하일 경우  추가해야함, pageNum을 증가시켜 다음페이지 탐색.
+			
 			String pageNum = "1";			
 			String codePage = MAINURL + "problem/status/"+ problemID + "/" + language + "/"+pageNum;
 			doc = Jsoup.connect(codePage)
@@ -672,7 +672,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		
 		for( String item: thisList) {
 			int temp = problemRating.get(item);
-			if(temp == -1) continue; // 레이팅 측정 안 된 경우
+			if(temp == -1) continue;
 			rating += ((float)temp/floatExRating) * 25;
 		}
 		updateLog("rating" + Integer.toString(rating));
