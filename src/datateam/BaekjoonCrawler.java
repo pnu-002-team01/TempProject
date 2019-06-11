@@ -48,7 +48,7 @@ public class BaekjoonCrawler {
 	
 	public BaekjoonCrawler(Map<String, String> cookie) {
 		loginCookie = cookie;
-		requestProblemRating();
+		acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -73,7 +73,7 @@ public class BaekjoonCrawler {
 	
 	// Methods
 	public void acquireProblemRatings() {
-    problemRating = new HashMap<String, String>();
+    problemRating = new HashMap<String, Integer>();
 		File file = new File("stats/ratings.txt");
 		try {
 			FileReader fr = new FileReader(file);
@@ -597,7 +597,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		//Write problem json as userID.json
 		File file = new File("data/users/"+userID+".json");
 		
-		s
+		try {
 			FileWriter fw = new FileWriter(file);
 			fw.write(jsonResult);
 			fw.close();
@@ -675,8 +675,11 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 			if(temp == -1) continue;
 			rating += ((float)temp/floatExRating) * 25;
 		}
-		updateLog("rating" + Integer.toString(rating));
+		updateLog("rating" + Float.toString(rating));
 		return rating;
+	}
+	
+	public static void main(String[] args) {
 	}
 
 }
