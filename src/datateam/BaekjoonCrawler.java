@@ -33,14 +33,14 @@ public class BaekjoonCrawler {
 	private String logResult = "";
 	public Document problemPageDocument = null;
 	private Map<String,String> loginCookie = null;
-	public Map<String, String> problemRating = new HashMap<String, String>();
+	private Map<String,Integer> problemRating = null;
 	private String language = "";
 	
 	// Constructor
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
-		requestProblemRating();
+    acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -72,26 +72,24 @@ public class BaekjoonCrawler {
 	}
 	
 	// Methods
-	
-	public void requestProblemRating() {
-		 try{
-			 	File path = new File("");
-	            File file = new File(path.getAbsolutePath()+"\\stats\\ratings.txt");
-	            FileReader filereader = new FileReader(file);
-	            BufferedReader bufReader = new BufferedReader(filereader);
-	            String line = "";
-	            while((line = bufReader.readLine()) != null){
-	                String[] list = line.split(":");
-	                problemRating.put(list[0],list[1]);
-	            }
-	            bufReader.close();
-	        }catch (FileNotFoundException e) {
-	            // TODO: handle exception
-	        }catch(IOException e){
-	            System.out.println(e);
-	        }
+	public void acquireProblemRatings() {
+    problemRating = new HashMap<String, String>();
+		File file = new File("stats/ratings.txt");
+		try {
+			FileReader fr = new FileReader(file);
+			BufferedReader bufReader = new BufferedReader(fr);
+			String line = "";
+			while((line = bufReader.readLine()) != null) {
+				String[] data = line.split(":");
+				problemRating.put(data[0], Integer.parseInt(data[1]));
+			} 
+			bufReader.close();
+		} catch(FileNotFoundException e) {
+			updateLog("Rating file not found.");
+		} catch(IOException e) {
+			updateLog("IO Exceptoin at ratings.txt");
+		}
 	}
-	
 	public String getLanguage(String str) throws FileNotFoundException, IOException, ParseException{
 		JSONParser parser = new JSONParser();
 		String path = this.getClass().getResource("").getPath() + "language.json";
@@ -673,19 +671,12 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		thisList.removeAll(prevList);
 		
 		for( String item: thisList) {
-			float temp = Integer.parseInt(problemRating.get(item));
+			int temp = problemRating.get(item);
 			if(temp == -1) continue; // 레이팅 측정 안 된 경우
-			rating += (temp/floatExRating) * 25;
+			rating += ((float)temp/floatExRating) * 25;
 		}
 		updateLog("rating" + Integer.toString(rating));
 		return rating;
 	}
-	
-	public static void main(String[] args) {
-		BaekjoonCrawler bojcrawl = new BaekjoonCrawler("Guest","guest");
-		bojcrawl.calcRating("","1131,1000,1001,1002","1500");
-		bojcrawl.updateLog("test");
-		bojcrawl.exportLog();
-		
-	}
+
 }
