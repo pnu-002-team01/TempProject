@@ -5,7 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,11 +24,8 @@ public class problemTags {
 		JSONParser parser = new JSONParser();
 		Database db = new Database();
 		try {
-            //ÆÄÀÏ °´Ã¼ »ı¼º
 			File problem = new File("C:\\Users\\ksaid\\git\\TempProject\\stats\\problemNumber.txt");
-            //ÀÔ·Â ½ºÆ®¸² »ı¼º
             FileReader filereader = new FileReader(problem);
-            //ÀÔ·Â ¹öÆÛ »ı¼º
             BufferedReader bufReader = new BufferedReader(filereader);
             
             Iterator<String> iterator;
@@ -47,7 +49,6 @@ public class problemTags {
 					//System.out.println(iterator.next() + " : " + line);
 				}
             }
-            //.readLine()Àº ³¡¿¡ °³Çà¹®ÀÚ¸¦ ÀĞÁö ¾Ê´Â´Ù.
             bufReader.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -56,6 +57,24 @@ public class problemTags {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static List<String> sortByValue(final Map<String, Integer> map){
+	    List<String> list = new ArrayList<String>();
+	    list.addAll(map.keySet());
+
+	    Collections.sort(list,new Comparator<Object>(){
+			@SuppressWarnings("unchecked")
+			public int compare(Object o1,Object o2){
+	            Object v1 = map.get(o1);
+	            Object v2 = map.get(o2);
+	            return ((Comparable<Object>) v1).compareTo(v2);
+	        }
+
+	    });
+
+	    Collections.reverse(list); // ì£¼ì„ì‹œ ì˜¤ë¦„ì°¨ìˆœ
+	    return list;
 	}
 
 }

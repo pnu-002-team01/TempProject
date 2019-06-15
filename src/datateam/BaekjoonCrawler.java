@@ -1,5 +1,6 @@
 package datateam;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,12 +33,14 @@ public class BaekjoonCrawler {
 	private String logResult = "";
 	public Document problemPageDocument = null;
 	private Map<String,String> loginCookie = null;
+	private Map<String,Integer> problemRating = null;
 	private String language = "";
 	
 	// Constructor
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
+		acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -44,17 +48,19 @@ public class BaekjoonCrawler {
 	
 	public BaekjoonCrawler(Map<String, String> cookie) {
 		loginCookie = cookie;
+		acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
 	}
+	
 	
 	// log-related Methods
 	public void updateLog(final String target) {
 		logResult += "[" + getCurrentTimeString() + "] " + target;
 	}
 	
-	public void exportLog(String Target) {
+	public void exportLog() {
 		File file = new File(LOG_PATH+logName+".log");	
 		try {
 			FileWriter fw = new FileWriter(file);
@@ -65,7 +71,35 @@ public class BaekjoonCrawler {
 		}
 	}
 	
+	private static String replaceLast(String string, String toReplace, String replacement) {    
+		   int pos = string.lastIndexOf(toReplace);     
+		   if (pos > -1) {        
+		   return string.substring(0, pos)+ replacement + string.substring(pos +   toReplace.length(), string.length());     
+		   } else { 
+			return string;     
+		   }
+		}
+	
 	// Methods
+	public void acquireProblemRatings() {
+    problemRating = new HashMap<String, Integer>();
+    	String path = this.getClass().getResource("").getPath() + "ratings.txt";
+		File file = new File(path);
+		try {
+			FileReader fr = new FileReader(file);
+			BufferedReader bufReader = new BufferedReader(fr);
+			String line = "";
+			while((line = bufReader.readLine()) != null) {
+				String[] data = line.split(":");
+				problemRating.put(data[0], Integer.parseInt(data[1]));
+			} 
+			bufReader.close();
+		} catch(FileNotFoundException e) {
+			updateLog("Rating file not found.");
+		} catch(IOException e) {
+			updateLog("IO Exceptoin at ratings.txt");
+		}
+	}
 	public String getLanguage(String str) throws FileNotFoundException, IOException, ParseException{
 		JSONParser parser = new JSONParser();
 		String path = this.getClass().getResource("").getPath() + "language.json";
@@ -106,7 +140,7 @@ public class BaekjoonCrawler {
 	                .header("Upgrade-Insecure-Requests", "1")	
 	                .cookies(loginCookie) 
 	                .get();
-			Elements User = document.getElementsByClass("pull-right");
+			Elements User = document.getElementsByClass("container");
 			Elements u = User.get(0).getElementsByClass("username");
 			userid = u.get(0).ownText();
 		} catch(IOException e) {
@@ -298,7 +332,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		}
 		
 		try {
-			// 1페이지에 공개코드가 5개 이하일 경우  추가해야함, pageNum을 증가시켜 다음페이지 탐색.
+			
 			String pageNum = "1";			
 			String codePage = MAINURL + "problem/status/"+ problemID + "/" + language + "/"+pageNum;
 			doc = Jsoup.connect(codePage)
@@ -632,6 +666,26 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		
+	}
+	public float calcRating(String prevProblem, String thisProblem,String exRating) {
+		float floatExRating = Float.parseFloat(exRating);
+		float rating= floatExRating;
+		prevProblem = prevProblem.replace(" ","");
+		thisProblem = thisProblem.replace(" ","");
+		String[] prevProbList = prevProblem.split(",");
+		String[] thisProbList = thisProblem.split(",");
+		ArrayList < String > prevList = new ArrayList<>(Arrays.asList(prevProbList)); 
+		ArrayList < String > thisList = new ArrayList<>(Arrays.asList(thisProbList)); 
+
+		thisList.removeAll(prevList);
+		for( String item: thisList) {
+			int temp = 0;
+			if ( problemRating.get(item) != null )
+				temp = problemRating.get(item);
+			if(temp == -1) continue;
+			rating += ((float)temp/floatExRating) * 25;
+		}
+		updateLog("rating" + Float.toString(rating));
+		return rating;
 	}
 }

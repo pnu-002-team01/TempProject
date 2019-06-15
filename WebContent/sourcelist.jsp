@@ -20,7 +20,7 @@
 %>
 	<header id="header">
 		<div class="inner">
-			<a href="main.jsp" class="logo">BACKJOON.GG</a>
+			<a href="start.jsp" class="logo">BACKJOON.GG</a>
 			<nav id="nav">
 				<a href="problems.jsp">내정보</a>
 				<a href="login.jsp">로그 아웃</a>
@@ -62,7 +62,7 @@
 								<th></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody style="color:black">
 							<%
 								for ( int i = 0; i < list.size(); i++ ) {
 									out.println(list.get(i));
@@ -85,7 +85,7 @@
 								<th></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody style="color:black">
 							<%
 								String lang = boj.getLastLanguage().trim();
 								ArrayList<String> top5 = boj.writeProblemCodes(proNum, lang);
