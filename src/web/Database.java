@@ -96,10 +96,10 @@ public class Database {
 		return ret;
 	}
 	
-	public void update(String userId, final String tableName, final String rating) {
+	public void update(String userId, final String tableName, final String rating, final String date) {
 		String updateSQL = "UPDATE " + tableName + "\r\n"
 				+ "SET rating = '" + rating + "'\r\n"
-				+ "WHERE userid = \'" + userId + "\' AND today = sysdate()";
+				+ "WHERE userid = \'" + userId + "\' AND today = '" + date + "'";
 		System.out.println(updateSQL);
 		try {
 			Statement stmt = con.createStatement();

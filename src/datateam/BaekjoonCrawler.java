@@ -40,7 +40,7 @@ public class BaekjoonCrawler {
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
-    acquireProblemRatings();
+		acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -71,10 +71,20 @@ public class BaekjoonCrawler {
 		}
 	}
 	
+	private static String replaceLast(String string, String toReplace, String replacement) {    
+		   int pos = string.lastIndexOf(toReplace);     
+		   if (pos > -1) {        
+		   return string.substring(0, pos)+ replacement + string.substring(pos +   toReplace.length(), string.length());     
+		   } else { 
+			return string;     
+		   }
+		}
+	
 	// Methods
 	public void acquireProblemRatings() {
     problemRating = new HashMap<String, Integer>();
-		File file = new File("stats/ratings.txt");
+    	String path = this.getClass().getResource("").getPath() + "ratings.txt";
+		File file = new File(path);
 		try {
 			FileReader fr = new FileReader(file);
 			BufferedReader bufReader = new BufferedReader(fr);
@@ -666,11 +676,12 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		String[] thisProbList = thisProblem.split(",");
 		ArrayList < String > prevList = new ArrayList<>(Arrays.asList(prevProbList)); 
 		ArrayList < String > thisList = new ArrayList<>(Arrays.asList(thisProbList)); 
-		
+
 		thisList.removeAll(prevList);
-		
 		for( String item: thisList) {
-			int temp = problemRating.get(item);
+			int temp = 0;
+			if ( problemRating.get(item) != null )
+				temp = problemRating.get(item);
 			if(temp == -1) continue;
 			rating += ((float)temp/floatExRating) * 25;
 		}
