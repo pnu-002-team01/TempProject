@@ -5,7 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -52,6 +57,24 @@ public class problemTags {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static List<String> sortByValue(final Map<String, Integer> map){
+	    List<String> list = new ArrayList<String>();
+	    list.addAll(map.keySet());
+
+	    Collections.sort(list,new Comparator<Object>(){
+			@SuppressWarnings("unchecked")
+			public int compare(Object o1,Object o2){
+	            Object v1 = map.get(o1);
+	            Object v2 = map.get(o2);
+	            return ((Comparable<Object>) v1).compareTo(v2);
+	        }
+
+	    });
+
+	    Collections.reverse(list); // 주석시 오름차순
+	    return list;
 	}
 
 }

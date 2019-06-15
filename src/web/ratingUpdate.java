@@ -13,7 +13,7 @@ public class ratingUpdate {
 		String rating = "1500";
 		for(int i = 0 ; i< ans.size();  ++i) {
 			cur = ans.get(i)[2];
-			int ao = bj.calcRating(prev, cur, rating);
+			int ao = (int)bj.calcRating(prev, cur, rating);
 			System.out.println(ao);
 			rating = Integer.toString(ao);
 			

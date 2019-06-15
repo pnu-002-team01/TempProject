@@ -58,6 +58,44 @@ public class Database {
 		}
 		return ret;
 	}
+	public ArrayList<String> getTags(final String problemNumber) {
+		ArrayList<String> ret = new ArrayList<String>();
+		try {
+			Statement stmt = con.createStatement();
+			String selectSQL = "SELECT tag\r\n" + 
+					"FROM problemtags\r\n" + 
+					"WHERE number = \'" + problemNumber + "\'\r\n";
+			ResultSet resultSet = stmt.executeQuery(selectSQL);
+			while(resultSet.next()) {
+				ret.add(new String (resultSet.getString("tag")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			ret.clear();
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public ArrayList<String> getNumbers(final String problemTag) {
+		ArrayList<String> ret = new ArrayList<String>();
+		try {
+			Statement stmt = con.createStatement();
+			String selectSQL = "SELECT number\r\n" + 
+					"FROM problemtags\r\n" + 
+					"WHERE tag = \'" + problemTag + "\'\r\n";
+			ResultSet resultSet = stmt.executeQuery(selectSQL);
+			while(resultSet.next()) {
+				ret.add(new String (resultSet.getString("number")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			ret.clear();
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 	public void update(String userId, final String tableName, final String rating) {
 		String updateSQL = "UPDATE " + tableName + "\r\n"
 				+ "SET rating = '" + rating + "'\r\n"
