@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class SourceAnalysis {
 
 	private static final String PUBLIC_IP = "http://3.16.83.76/";
-	private static final String[] Source = { "cppcheck.php", "javapmd.php" };
+	private static final String[] Source = { "cppcheck.php", "javacheck.php" };
 	private static URL url;
 	private static URLConnection conn;
 	private static int type;
