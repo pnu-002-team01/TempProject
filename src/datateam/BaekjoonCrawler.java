@@ -633,7 +633,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 			e.printStackTrace();
 		}
 	}
-	
+	/*
 	public float calcRating(String prevProblem, String thisProblem,String exRating) {
 		float floatExRating = Float.parseFloat(exRating);
 		float rating= floatExRating;
@@ -654,12 +654,5 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		System.err.println(rating);
 		return rating;
 	}
-	
-	public static void main(String[] args) {
-		BaekjoonCrawler bojcrawl = new BaekjoonCrawler("Guest","guest");
-		bojcrawl.calcRating("","1131,1000,1001,1002","1500");
-		bojcrawl.updateLog("test");
-		bojcrawl.exportLog();
-		
-	}
+	*/
 }
