@@ -13,7 +13,7 @@
 	String log = "";
 	session.removeAttribute("cookie");
 	session.removeAttribute("name");
-	if ( (int)session.getAttribute("trylogin") == 0 ) {
+	if ( session.getAttribute("trylogin") == null || (int)session.getAttribute("trylogin") == 0 ) {
 		log = "none";
 	} else {
 		log = "block";
