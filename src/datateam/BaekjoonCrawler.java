@@ -1,5 +1,6 @@
 package datateam;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,12 +33,14 @@ public class BaekjoonCrawler {
 	private String logResult = "";
 	public Document problemPageDocument = null;
 	private Map<String,String> loginCookie = null;
+	private Map<String,Integer> problemRating = null;
 	private String language = "";
 	
 	// Constructor
 	public BaekjoonCrawler(String userID, String userPassword) {
 		checkInternetConnection();
 		acquireLoginCookie(userID,userPassword);
+    acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
@@ -44,10 +48,12 @@ public class BaekjoonCrawler {
 	
 	public BaekjoonCrawler(Map<String, String> cookie) {
 		loginCookie = cookie;
+		acquireProblemRatings();
 		if(logName == "") {
 			logName = getCurrentTimeString();
 		}
 	}
+	
 	
 	// log-related Methods
 	public void updateLog(final String target) {
@@ -66,6 +72,24 @@ public class BaekjoonCrawler {
 	}
 	
 	// Methods
+	public void acquireProblemRatings() {
+    problemRating = new HashMap<String, Integer>();
+		File file = new File("stats/ratings.txt");
+		try {
+			FileReader fr = new FileReader(file);
+			BufferedReader bufReader = new BufferedReader(fr);
+			String line = "";
+			while((line = bufReader.readLine()) != null) {
+				String[] data = line.split(":");
+				problemRating.put(data[0], Integer.parseInt(data[1]));
+			} 
+			bufReader.close();
+		} catch(FileNotFoundException e) {
+			updateLog("Rating file not found.");
+		} catch(IOException e) {
+			updateLog("IO Exceptoin at ratings.txt");
+		}
+	}
 	public String getLanguage(String str) throws FileNotFoundException, IOException, ParseException{
 		JSONParser parser = new JSONParser();
 		String path = this.getClass().getResource("").getPath() + "language.json";
@@ -298,7 +322,7 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		}
 		
 		try {
-			// 1페이지에 공개코드가 5개 이하일 경우  추가해야함, pageNum을 증가시켜 다음페이지 탐색.
+			
 			String pageNum = "1";			
 			String codePage = MAINURL + "problem/status/"+ problemID + "/" + language + "/"+pageNum;
 			doc = Jsoup.connect(codePage)
@@ -633,7 +657,6 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 			e.printStackTrace();
 		}
 	}
-	/*
 	public float calcRating(String prevProblem, String thisProblem,String exRating) {
 		float floatExRating = Float.parseFloat(exRating);
 		float rating= floatExRating;
@@ -647,12 +670,11 @@ public ArrayList<String> writeProblemCodes(String problemID, String languageName
 		thisList.removeAll(prevList);
 		
 		for( String item: thisList) {
-			float temp = Integer.parseInt(problemRating.get(item));
-			if(temp == -1) continue; // 레이팅 측정 안 된 경우
-			rating += (temp/floatExRating) * 25;
+			int temp = problemRating.get(item);
+			if(temp == -1) continue;
+			rating += ((float)temp/floatExRating) * 25;
 		}
-		System.err.println(rating);
+		updateLog("rating" + Float.toString(rating));
 		return rating;
 	}
-	*/
 }

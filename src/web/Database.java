@@ -38,19 +38,18 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	// 오늘로부터 최근 30번 까지 데이터를 DB에서 읽는다.
 	public ArrayList<String[]> readUserdata(final String userID, final String infoType) {
 		ArrayList<String[]> ret = new ArrayList<String[]>();
 		try {
 			Statement stmt = con.createStatement();
-			String selectSQL = "SELECT today, numberofproblem\r\n" + 
+			String selectSQL = "SELECT today, numberofproblem, list, rating\r\n" + 
 					"FROM " + infoType + "\r\n" + 
 					"WHERE userid = \'" + userID + "\'\r\n" + 
 					"ORDER BY today ASC\r\n" + 
 					"LIMIT 30;";
 			ResultSet resultSet = stmt.executeQuery(selectSQL);
 			while(resultSet.next()) {
-				ret.add(new String[] {resultSet.getString("today"), resultSet.getString("numberofproblem")});
+				ret.add(new String[] {resultSet.getString("today"), resultSet.getString("numberofproblem"), resultSet.getString("list"), resultSet.getString("rating")});
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -59,10 +58,49 @@ public class Database {
 		}
 		return ret;
 	}
-	public void update(String userId, final String tableName, final String list, final int size) {
+	public ArrayList<String> getTags(final String problemNumber) {
+		ArrayList<String> ret = new ArrayList<String>();
+		try {
+			Statement stmt = con.createStatement();
+			String selectSQL = "SELECT tag\r\n" + 
+					"FROM problemtags\r\n" + 
+					"WHERE number = \'" + problemNumber + "\'\r\n";
+			ResultSet resultSet = stmt.executeQuery(selectSQL);
+			while(resultSet.next()) {
+				ret.add(new String (resultSet.getString("tag")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			ret.clear();
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public ArrayList<String> getNumbers(final String problemTag) {
+		ArrayList<String> ret = new ArrayList<String>();
+		try {
+			Statement stmt = con.createStatement();
+			String selectSQL = "SELECT number\r\n" + 
+					"FROM problemtags\r\n" + 
+					"WHERE tag = \'" + problemTag + "\'\r\n";
+			ResultSet resultSet = stmt.executeQuery(selectSQL);
+			while(resultSet.next()) {
+				ret.add(new String (resultSet.getString("number")));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			ret.clear();
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	public void update(String userId, final String tableName, final String rating) {
 		String updateSQL = "UPDATE " + tableName + "\r\n"
-				+ "SET list = '" + list + "' , " + size
-				+ "WEHRE userid = " + userId + "AND today = sysdate()";
+				+ "SET rating = '" + rating + "'\r\n"
+				+ "WHERE userid = \'" + userId + "\' AND today = sysdate()";
+		System.out.println(updateSQL);
 		try {
 			Statement stmt = con.createStatement();
 			stmt.executeUpdate(updateSQL);
@@ -70,9 +108,7 @@ public class Database {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	// 문제의 분류와 번호를 입력한다.
 	public void insert(String tag, String number) {
 		Statement stmt;
 		try {
@@ -87,7 +123,6 @@ public class Database {
 			System.out.println(tag + "," + number);
 		}
 	}
-	// DB에 user 정보를 입력한다.
 	public void insert(String userId, final String tableName, ArrayList<String> crawledData ) {
 		String list = "";
 		try {
@@ -110,7 +145,7 @@ public class Database {
 			stmt.executeUpdate(insertSQL);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			update(userId, tableName, list, crawledData.size());
+			
 			e.printStackTrace();
 		}
 	}

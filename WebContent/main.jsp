@@ -21,7 +21,7 @@
 		
 			<header id="header">
 				<div class="inner">
-					<a href="main.jsp" class="logo">BACKJOON.GG</a>
+					<a href="start.jsp" class="logo">BACKJOON.GG</a>
 					<nav id="nav">
 						<!-- <a href="main.jsp">메인</a> -->
 						<a href="problems.jsp">내정보</a>
