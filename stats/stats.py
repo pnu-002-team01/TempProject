@@ -80,7 +80,7 @@ def scrap():
     for i in range(0,13835):
         rating[i] = transform("solvedPeopleNumber",problemData["solvedPeopleNumber"][i])
         if rating[i] != -1:
-            rating[i] = int(rating[i] * (100 + transform("percentCorrect",problemData["percentCorrect"][i]) - AVERAGE_CORRECT) / 100)
+            rating[i] = int(rating[i] * (100 - transform("percentCorrect",problemData["percentCorrect"][i]) + AVERAGE_CORRECT) / 100)
     with open("ratings.txt","w",encoding="utf-8") as f:
         result = ""
         for i in range(0,13835):
